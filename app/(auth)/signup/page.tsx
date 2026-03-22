@@ -23,9 +23,9 @@ const roleLabels: Record<Role, string> = {
 };
 
 const dashboardRoutes: Record<Role, string> = {
-  member: "/member-dashboard",
-  trainer: "/trainer-dashboard",
-  owner: "/owner-dashboard",
+  member: "/member",
+  trainer: "/trainer",
+  owner: "/owner",
 };
 
 export default function SignUp() {
@@ -85,7 +85,7 @@ export default function SignUp() {
     };
 
     axios
-      .post(`${server}/api/auth/register`, payload)
+      .post(`${server}/api/v1/auth/register`, payload)
       .then((response) => {
         if (response.status === 201) {
           toast.success("Account created successfully!", { duration: 1000, icon: "🎉" });
@@ -106,7 +106,18 @@ export default function SignUp() {
         }
       })
       .catch((error) => {
-        const message = error.response?.data?.message || error.message || "Signup failed.";
+        let message = "Signup failed. Please try again.";
+        if (error.response) {
+          if (error.response.status === 429) {
+            message = "Too many attempts. Please try again after 15 minutes.";
+          } else {
+            message = error.response.data?.error?.message || error.response.data?.message || message;
+          }
+        } else if (error.request) {
+          message = "No response from server. Check your connection.";
+        } else {
+          message = error.message;
+        }
         toast.error(message);
         setLoading(false);
       });

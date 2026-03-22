@@ -32,29 +32,41 @@ const Login = () => {
       : { phone: identifier, email: identifier, password };
 
     axios
-      .post(`${server}/api/auth/login`, payload)
+      .post(`${server}/api/v1/auth/login`, payload)
       .then((response) => {
         if (response.status === 200) {
           toast.success("Login successful!", { duration: 1000, id: "login-success", icon: "👏" });
-          if (response.data) {
-            const role = response.data.role ? response.data.role.toLowerCase() : "";
+          if (response.data && response.data.data) {
+            const resData = response.data.data;
+            const role = resData.user?.role ? resData.user.role.toLowerCase() : "";
             localStorage.setItem("role", role);
-            localStorage.setItem("jwt", response.data.token);
-            if (response.data.profile) {
-              localStorage.setItem("firstName", response.data.profile.firstName);
+            localStorage.setItem("jwt", resData.tokens?.accessToken || "");
+            if (resData.profile) {
+              localStorage.setItem("firstName", resData.profile.firstName);
             }
             setTimeout(() => {
-              router.push(`/${role}-dashboard`);
+              router.push(`/${role}`);
             }, 1000);
           } else {
-            toast.error("User role not found. Please contact support.");
+            toast.error("User data not found. Please contact support.");
           }
         } else {
           toast.error(response.data.message || "Login failed. Please try again.");
         }
       })
       .catch((error) => {
-        const message = error.response?.data?.message || error.message || "Login failed.";
+        let message = "Login failed. Please try again.";
+        if (error.response) {
+          if (error.response.status === 429) {
+            message = "Too many attempts. Please try again after 15 minutes.";
+          } else {
+            message = error.response.data?.error?.message || error.response.data?.message || message;
+          }
+        } else if (error.request) {
+          message = "No response from server. Check your connection.";
+        } else {
+          message = error.message;
+        }
         toast.error(message);
       })
       .finally(() => {

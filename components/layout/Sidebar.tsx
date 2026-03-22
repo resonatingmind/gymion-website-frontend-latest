@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { NAV_CONFIG, ROLE_LABELS, type UserRole } from "@/lib/nav-config";
 import { cn } from "@/lib/utils";
@@ -25,8 +25,16 @@ export function Sidebar({ role, userName, userPhoto, mobileOpen, setMobileOpen }
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const pathname = usePathname();
+  const router = useRouter();
   const navItems = NAV_CONFIG[role];
   const roleLabel = ROLE_LABELS[role];
+
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("firstName");
+    router.push("/login");
+  };
 
   // Desktop sidebar is "expanded" when hovered
   const desktopExpanded = isHovered;
@@ -134,7 +142,8 @@ export function Sidebar({ role, userName, userPhoto, mobileOpen, setMobileOpen }
                 </div>
               </Link>
               <button
-                className="shrink-0 flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                onClick={handleLogout}
+                className="shrink-0 flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
                 title="Logout"
               >
                 <LogOut size={18} />
@@ -145,7 +154,8 @@ export function Sidebar({ role, userName, userPhoto, mobileOpen, setMobileOpen }
           {/* Collapsed: just logout icon */}
           {!expanded && (
             <button
-              className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+              onClick={handleLogout}
+              className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
               title="Logout"
             >
               <LogOut size={18} />
