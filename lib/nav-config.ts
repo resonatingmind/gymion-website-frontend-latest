@@ -14,6 +14,8 @@ export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  /** If true, only mark active on an exact pathname match (no sub-path matching) */
+  exact?: boolean;
 }
 
 export const ROLE_LABELS: Record<UserRole, string> = {
@@ -26,7 +28,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 // Add more nav items here as you build out each role's pages
 export const NAV_CONFIG: Record<UserRole, NavItem[]> = {
   owner: [
-    { label: "Dashboard", href: "/owner", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/owner", icon: LayoutDashboard, exact: true },
     { label: "Members", href: "/owner/members", icon: Users },
     { label: "Trainers", href: "/owner/trainers", icon: Dumbbell },
     { label: "Attendance", href: "/owner/attendance", icon: CalendarCheck },

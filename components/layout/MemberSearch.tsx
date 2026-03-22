@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 // ── Mock member data (replace with real API call later) ─────────────────────
 export interface Member {
@@ -12,10 +13,11 @@ export interface Member {
   phone: string;
   plan: string;
   status: "active" | "expiring" | "expired";
+  profilePhoto?: string | null;
 }
 
 const MOCK_MEMBERS: Member[] = [
-  { id: "MEM001", name: "Rahul Kumar",    email: "rahul.kumar@email.com",    phone: "9876543210", plan: "Monthly · Standard",    status: "active"   },
+  { id: "MEM001", name: "Rahul Kumar",    email: "rahul.kumar@email.com",    phone: "9876543210", plan: "Monthly · Standard",    status: "active"   , profilePhoto:"/user-avatar.jpg"},
   { id: "MEM002", name: "Priya Sharma",   email: "priya.sharma@email.com",   phone: "9812345678", plan: "Quarterly · Premium",   status: "active"   },
   { id: "MEM003", name: "Arjun Mehta",    email: "arjun.mehta@email.com",    phone: "9823456789", plan: "Monthly · Standard",    status: "expiring" },
   { id: "MEM004", name: "Sneha Joshi",    email: "sneha.joshi@email.com",    phone: "9834567890", plan: "Annual · Premium",      status: "active"   },
@@ -27,10 +29,7 @@ const MOCK_MEMBERS: Member[] = [
   { id: "MEM010", name: "Deepika Menon",  email: "deepika.menon@email.com",  phone: "9890123456", plan: "Quarterly · Premium",   status: "active"   },
 ];
 
-// ── Helper ───────────────────────────────────────────────────────────────────
-function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
-}
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function getStatusStyle(status: Member["status"]) {
   switch (status) {
@@ -82,9 +81,12 @@ function MemberDropdown({
                 )}
               >
                 {/* Avatar */}
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 text-sm font-bold">
-                  {getInitials(member.name)}
-                </div>
+                <UserAvatar
+                  name={member.name}
+                  photoUrl={member.profilePhoto}
+                  size={36}
+                  theme="violet"
+                />
                 {/* Info */}
                 <div className="flex flex-col flex-1 min-w-0">
                   <div className="flex items-center gap-2">

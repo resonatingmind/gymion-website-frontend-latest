@@ -9,10 +9,11 @@ interface DashboardLayoutProps {
   children: ReactNode;
   role: UserRole;
   userName: string;
+  userPhoto?: string | null;
   notificationCount?: number;
 }
 
-export default function DashboardLayout({ children, role, userName, notificationCount = 0 }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, role, userName, userPhoto, notificationCount = 0 }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children, role, userName, notification
       <Sidebar
         role={role}
         userName={userName}
+        userPhoto={userPhoto}
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
       />
@@ -27,6 +29,7 @@ export default function DashboardLayout({ children, role, userName, notification
         <Navbar
           role={role}
           userName={userName}
+          userPhoto={userPhoto}
           notificationCount={notificationCount}
           mobileOpen={mobileOpen}
           onToggleMobile={() => setMobileOpen((prev) => !prev)}

@@ -2,31 +2,27 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Bell, Menu, X } from "lucide-react";
 import { type UserRole, ROLE_LABELS } from "@/lib/nav-config";
 import { MemberSearch } from "./MemberSearch";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface NavbarProps {
   role: UserRole;
   userName: string;
+  userPhoto?: string | null;
   notificationCount?: number;
   mobileOpen: boolean;
   onToggleMobile: () => void;
 }
 
-export function Navbar({ role, userName, notificationCount = 0, mobileOpen, onToggleMobile }: NavbarProps) {
+export function Navbar({ role, userName, userPhoto, notificationCount = 0, mobileOpen, onToggleMobile }: NavbarProps) {
   const [greeting, setGreeting] = useState("Hello");
   const [dateString, setDateString] = useState("");
   const [logoError, setLogoError] = useState(false);
 
   const name = userName.split(" ")[0];
-
-  const initials = userName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
 
   useEffect(() => {
     const updateTimeAndGreeting = () => {
@@ -59,50 +55,53 @@ export function Navbar({ role, userName, notificationCount = 0, mobileOpen, onTo
   const displayCount = notificationCount > 9 ? "9+" : notificationCount;
 
   return (
-    <header className="relative flex h-16 w-full items-center justify-between border-b border-gray-100 bg-white px-4 md:px-6 shrink-0 z-20">
+    <header className="relative flex h-16 w-full items-center gap-4 border-b border-gray-100 bg-white px-4 md:px-6 shrink-0 z-20">
 
-      {/* ── Mobile Left: Gymion Logo ─────────────────────────────────── */}
-      <div className="flex md:hidden items-center">
-        {!logoError ? (
-          <Image
-            src="/Logo/GYMION black logo.png"
-            alt="Gymion Logo"
-            width={100}
-            height={28}
-            className="object-contain"
-            onError={() => setLogoError(true)}
-            priority
-          />
-        ) : (
-          <span className="text-lg font-bold tracking-wider text-gray-900">
-            GYM<span className="text-violet-600">ION</span>
-          </span>
-        )}
+      {/* ── Mobile Left: Gymion Logo → links to home ──────────────────── */}
+      <div className="flex md:hidden items-center shrink-0">
+        <Link href="/">
+          {!logoError ? (
+            <Image
+              src="/Logo/GYMION black logo.png"
+              alt="Gymion Logo"
+              width={100}
+              height={28}
+              className="object-contain"
+              onError={() => setLogoError(true)}
+              priority
+            />
+          ) : (
+            <span className="text-lg font-bold tracking-wider text-gray-900">
+              GYM<span className="text-violet-600">ION</span>
+            </span>
+          )}
+        </Link>
       </div>
 
-      {/* ── Desktop Left: Greeting & Date ───────────────────────────── */}
+      {/* ── Desktop Left: Greeting & Date ─────────────────────────────── */}
       <div className="hidden md:flex flex-col shrink-0">
         <h2 className="text-sm font-medium text-gray-900">{greeting}</h2>
         <p className="text-xs text-gray-400">{dateString}</p>
       </div>
 
-      {/* ── Desktop Center: Member Search Bar ───────────────────────── */}
-      {/*   Absolutely centered so it doesn't shift with left/right content */}
-      <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-full max-w-[400px] px-4">
-        <MemberSearch variant="desktop" className="w-full max-w-none" />
+      {/* ── Center: always-present flex-1 spacer; search visible at lg+ ── */}
+      <div className="flex flex-1 items-center justify-center">
+        <div className="hidden lg:block w-full max-w-[420px]">
+          <MemberSearch variant="desktop" className="w-full max-w-none" />
+        </div>
       </div>
 
-      {/* ── Right: Search (mobile), Bell, Profile, Hamburger (mobile) ── */}
-      <div className="flex items-center gap-2">
+      {/* ── Right: Search icon (< lg), Bell, Profile, Hamburger (mobile) ── */}
+      <div className="flex items-center gap-2 shrink-0">
 
-        {/* Mobile: Search icon */}
-        <MemberSearch variant="mobile" className="md:hidden" />
+        {/* Search icon — shown below lg where the bar is hidden */}
+        <MemberSearch variant="mobile" className="lg:hidden" />
 
         {/* Notification bell */}
         <button className="relative flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-50 text-gray-600 transition-colors">
           <Bell size={20} />
           {notificationCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white tracking-tighter">
+            <span className="absolute right-1 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white tracking-tighter">
               {displayCount}
             </span>
           )}
@@ -110,16 +109,17 @@ export function Navbar({ role, userName, notificationCount = 0, mobileOpen, onTo
 
         <div className="h-6 w-px bg-gray-200" />
 
-        {/* Profile */}
-        <div className="flex items-center gap-3">
+        {/* Profile → links to account page */}
+        <Link
+          href={`/${role}/account`}
+          className="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-gray-50 transition-colors"
+        >
           <div className="hidden flex-col items-end sm:flex">
             <span className="text-sm font-semibold text-gray-900">{userName}</span>
             <span className="text-xs font-medium text-gray-500">{ROLE_LABELS[role]}</span>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-sm font-bold text-violet-700">
-            {initials}
-          </div>
-        </div>
+          <UserAvatar name={userName} photoUrl={userPhoto} size={36} theme="violet" />
+        </Link>
 
         {/* Mobile: Hamburger */}
         <button

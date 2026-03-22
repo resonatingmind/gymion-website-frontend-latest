@@ -7,15 +7,17 @@ import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { NAV_CONFIG, ROLE_LABELS, type UserRole } from "@/lib/nav-config";
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface SidebarProps {
   role: UserRole;
   userName: string;
+  userPhoto?: string | null;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
 }
 
-export function Sidebar({ role, userName, mobileOpen, setMobileOpen }: SidebarProps) {
+export function Sidebar({ role, userName, userPhoto, mobileOpen, setMobileOpen }: SidebarProps) {
   // Desktop: hover-based expand/collapse
   const [isHovered, setIsHovered] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -25,13 +27,6 @@ export function Sidebar({ role, userName, mobileOpen, setMobileOpen }: SidebarPr
   const pathname = usePathname();
   const navItems = NAV_CONFIG[role];
   const roleLabel = ROLE_LABELS[role];
-
-  const initials = userName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
 
   // Desktop sidebar is "expanded" when hovered
   const desktopExpanded = isHovered;
@@ -48,9 +43,9 @@ export function Sidebar({ role, userName, mobileOpen, setMobileOpen }: SidebarPr
   // Shared nav content used in both desktop and mobile renderings
   const NavContent = ({ expanded }: { expanded: boolean }) => (
     <>
-      {/* Header / Logo */}
+      {/* Header / Logo → links to home */}
       <div className="flex h-16 flex-col items-center justify-start border-b border-white/5 pt-4">
-        <div className="flex items-center justify-center h-8">
+        <Link href="/" className="flex items-center justify-center h-8">
           {!logoError ? (
             <Image
               src={expanded ? "/Logo/GYMION White logo.png" : "/Logo/Gymion Favicon.png"}
@@ -70,15 +65,16 @@ export function Sidebar({ role, userName, mobileOpen, setMobileOpen }: SidebarPr
               )}
             </div>
           )}
-        </div>
+        </Link>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
         <ul className="space-y-1 px-3">
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(item.href + "/");
+            const isActive = item.exact
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(item.href + "/");
             const Icon = item.icon;
 
             return (
@@ -122,18 +118,21 @@ export function Sidebar({ role, userName, mobileOpen, setMobileOpen }: SidebarPr
             expanded ? "gap-3" : "justify-center"
           )}
         >
-          {/* Expanded: avatar + name/role + logout inline */}
+          {/* Expanded: avatar + name/role (clickable → account) + logout */}
           {expanded && (
             <div className="flex flex-1 items-center gap-3 overflow-hidden min-w-0">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-900/40 text-violet-300 font-bold text-sm">
-                {initials}
-              </div>
-              <div className="flex flex-col overflow-hidden min-w-0 flex-1">
-                <span className="truncate text-sm font-semibold text-white">
-                  {userName}
-                </span>
-                <span className="truncate text-xs text-gray-400">{roleLabel}</span>
-              </div>
+              <Link
+                href={`/${role}/account`}
+                className="flex flex-1 items-center gap-3 overflow-hidden min-w-0 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                <UserAvatar name={userName} photoUrl={userPhoto} size={36} theme="dark" />
+                <div className="flex flex-col overflow-hidden min-w-0 flex-1">
+                  <span className="truncate text-sm font-semibold text-white">
+                    {userName}
+                  </span>
+                  <span className="truncate text-xs text-gray-400">{roleLabel}</span>
+                </div>
+              </Link>
               <button
                 className="shrink-0 flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
                 title="Logout"
