@@ -36,12 +36,20 @@ export const NAV_CONFIG: Record<UserRole, NavItem[]> = {
     { label: "Gym Setup", href: "/owner/settings", icon: Settings },
   ],
   admin: [
-    { label: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
   ],
   trainer: [
-    { label: "Dashboard", href: "/dashboard/trainer", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/trainer", icon: LayoutDashboard, exact: true },
+    { label: "My Members", href: "/trainer/members", icon: Users },
+    { label: "Schedule", href: "/trainer/schedule", icon: CalendarCheck },
+    { label: "Workouts", href: "/trainer/workouts", icon: Dumbbell },
+    { label: "Settings", href: "/trainer/settings", icon: Settings },
   ],
   member: [
-    { label: "Dashboard", href: "/dashboard/member", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/member", icon: LayoutDashboard, exact: true },
+    { label: "My Workouts", href: "/member/workouts", icon: Dumbbell },
+    { label: "Attendance", href: "/member/attendance", icon: CalendarCheck },
+    { label: "Payments", href: "/member/payments", icon: CreditCard },
+    { label: "Settings", href: "/member/settings", icon: Settings },
   ],
 };

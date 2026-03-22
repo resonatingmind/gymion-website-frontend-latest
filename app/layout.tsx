@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Gymion — Run Your Gym on Autopilot",
   description:
     "Gymion unifies members, trainers, payments, and workouts into one powerful platform — so you spend less time managing and more time scaling.",
+  icons: {
+    icon: '/Logo/Gymion Favicon.png',
+  },
 };
 
 export default function RootLayout({
