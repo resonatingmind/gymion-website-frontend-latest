@@ -26,12 +26,12 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 // Add more nav items here as you build out each role's pages
 export const NAV_CONFIG: Record<UserRole, NavItem[]> = {
   owner: [
-    { label: "Dashboard", href: "/dashboard/owner", icon: LayoutDashboard },
-    { label: "Members", href: "/dashboard/owner/members", icon: Users },
-    { label: "Trainers", href: "/dashboard/owner/trainers", icon: Dumbbell },
-    { label: "Attendance", href: "/dashboard/owner/attendance", icon: CalendarCheck },
-    { label: "Payments", href: "/dashboard/owner/payments", icon: CreditCard },
-    { label: "Gym Setup", href: "/dashboard/owner/settings", icon: Settings },
+    { label: "Dashboard", href: "/owner", icon: LayoutDashboard },
+    { label: "Members", href: "/owner/members", icon: Users },
+    { label: "Trainers", href: "/owner/trainers", icon: Dumbbell },
+    { label: "Attendance", href: "/owner/attendance", icon: CalendarCheck },
+    { label: "Payments", href: "/owner/payments", icon: CreditCard },
+    { label: "Gym Setup", href: "/owner/settings", icon: Settings },
   ],
   admin: [
     { label: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
