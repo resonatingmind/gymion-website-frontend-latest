@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { setCookie } from "@/lib/utils";
 
 const server = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000";
 
@@ -93,6 +94,16 @@ export default function SignUp() {
             const data = response.data.data;
             const userRole = data.role ? data.role.toLowerCase() : selectedRole;
             localStorage.setItem("role", userRole);
+            if (data.tokens?.accessToken) {
+              localStorage.setItem("jwt", data.tokens.accessToken);
+            }
+            
+            // Set cookies for middleware
+            setCookie("role", userRole);
+            if (data.tokens?.accessToken) {
+              setCookie("jwt", data.tokens.accessToken);
+            }
+
             if (data.profile) {
               localStorage.setItem("firstName", data.profile.firstName);
             }

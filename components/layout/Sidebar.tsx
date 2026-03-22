@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { NAV_CONFIG, ROLE_LABELS, type UserRole } from "@/lib/nav-config";
-import { cn } from "@/lib/utils";
+import { cn, deleteCookie } from "@/lib/utils";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface SidebarProps {
@@ -33,6 +33,11 @@ export function Sidebar({ role, userName, userPhoto, mobileOpen, setMobileOpen }
     localStorage.removeItem("role");
     localStorage.removeItem("jwt");
     localStorage.removeItem("firstName");
+    
+    // Clear cookies for middleware
+    deleteCookie("role");
+    deleteCookie("jwt");
+    
     router.push("/login");
   };
 

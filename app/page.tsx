@@ -40,6 +40,8 @@ const roleData = {
 const Home = () => {
   const [activeRole, setActiveRole] = useState<"owner" | "trainer" | "member">("owner");
   const [isFading, setIsFading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -59,6 +61,15 @@ const Home = () => {
     return () => {
       lenis.destroy();
     };
+  }, []);
+
+  useEffect(() => {
+    const role = typeof window !== 'undefined' ? localStorage.getItem("role") : null;
+    const jwt = typeof window !== 'undefined' ? localStorage.getItem("jwt") : null;
+    if (role && jwt) {
+      setIsLoggedIn(true);
+      setUserRole(role);
+    }
   }, []);
 
   const switchRole = (newRole: "owner" | "trainer" | "member") => {
@@ -83,7 +94,11 @@ const Home = () => {
           <li><a href="#features">Features</a></li>
           <li><a href="#howitworks">How it Works</a></li> */}
         </ul>
-        <Link href="/login" className="nav-cta" style={{textDecoration: 'none', color: '#fff'}}>Login</Link>
+        {isLoggedIn ? (
+          <Link href={`/${userRole}`} className="nav-cta" style={{textDecoration: 'none', color: '#fff'}}>Dashboard</Link>
+        ) : (
+          <Link href="/login" className="nav-cta" style={{textDecoration: 'none', color: '#fff'}}>Login</Link>
+        )}
       </nav>
 
       <section id="hero">
@@ -103,7 +118,11 @@ const Home = () => {
             Gymion unifies members, trainers, payments, and workouts into one powerful platform — so you spend less time managing and more time scaling.
           </p>
           <div className="ctas fu d4">
-            <Link href="/signup" className="btn-p">Get Started Free</Link>
+            {isLoggedIn ? (
+              <Link href={`/${userRole}`} className="btn-p">Go to Dashboard</Link>
+            ) : (
+              <Link href="/signup" className="btn-p">Get Started Free</Link>
+            )}
             <a href="#problem" className="btn-g" style={{textDecoration: 'none'}}>Book a Demo →</a>
           </div>
           <div className="stats-row fu d5">
@@ -631,7 +650,11 @@ const Home = () => {
             <h2>Stop managing your gym.<br /><span className="gt">Start growing it.</span></h2>
             <p className="cta-sub">Join the gyms already saving hours every week with Gymion.</p>
             <div className="cta-btns">
-              <Link href="/signup" className="btn-p" style={{ padding: "15px 32px", fontSize: "15px" }}>Get Started Free</Link>
+              {isLoggedIn ? (
+                <Link href={`/${userRole}`} className="btn-p" style={{ padding: "15px 32px", fontSize: "15px" }}>Go to Dashboard</Link>
+              ) : (
+                <Link href="/signup" className="btn-p" style={{ padding: "15px 32px", fontSize: "15px" }}>Get Started Free</Link>
+              )}
               <a href="#problem" className="btn-g" style={{ padding: "15px 32px", fontSize: "15px", textDecoration: "none" }}>Book a Demo →</a>
             </div>
             <p className="no-cc">No credit card required &nbsp;·&nbsp; Setup in 3 minutes &nbsp;·&nbsp; Cancel anytime</p>
