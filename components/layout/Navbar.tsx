@@ -86,7 +86,7 @@ export function Navbar({ role, userName, userPhoto, notificationCount = 0, mobil
 
       {/* ── Center: always-present flex-1 spacer; search visible at lg+ (owner only) ── */}
       <div className="flex flex-1 items-center justify-center">
-        {role === "owner" && (
+        {(role === "owner" || role==="trainer") && (
           <div className="hidden lg:block w-full max-w-[420px]">
             <MemberSearch variant="desktop" className="w-full max-w-none" />
           </div>
@@ -97,7 +97,7 @@ export function Navbar({ role, userName, userPhoto, notificationCount = 0, mobil
       <div className="flex items-center gap-2 shrink-0">
 
         {/* Search icon — shown below lg where the bar is hidden (owner only) */}
-        {role === "owner" && <MemberSearch variant="mobile" className="lg:hidden" />}
+        {(role === "owner" || role==="trainer") && <MemberSearch variant="mobile" className="lg:hidden" />}
 
         {/* Notification bell */}
         <button className="relative flex h-10 w-10 items-center justify-center rounded-xl hover:bg-gray-50 text-gray-600 transition-colors">
