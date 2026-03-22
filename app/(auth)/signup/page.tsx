@@ -3,6 +3,10 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+
+const server = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:4000";
 
 type Role = "member" | "trainer" | "owner";
 
@@ -71,10 +75,41 @@ export default function SignUp() {
     setErrors({});
     setLoading(true);
 
-    // Simulate API call — will be replaced with real backend integration
-    setTimeout(() => {
-      router.push(dashboardRoutes[selectedRole]);
-    }, 1500);
+    const payload = {
+      firstName,
+      lastName: formData.get("lastName") as string,
+      phoneNumber: phone,
+      email,
+      password,
+      role: selectedRole
+    };
+
+    axios
+      .post(`${server}/api/auth/register`, payload)
+      .then((response) => {
+        if (response.status === 201) {
+          toast.success("Account created successfully!", { duration: 1000, icon: "🎉" });
+          if (response.data) {
+            const data = response.data.data;
+            const userRole = data.role ? data.role.toLowerCase() : selectedRole;
+            localStorage.setItem("role", userRole);
+            if (data.profile) {
+              localStorage.setItem("firstName", data.profile.firstName);
+            }
+            setTimeout(() => {
+              router.push(dashboardRoutes[selectedRole]);
+            }, 1000);
+          }
+        } else {
+          toast.error(response.data.message || "Signup failed. Please try again.");
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        const message = error.response?.data?.message || error.message || "Signup failed.";
+        toast.error(message);
+        setLoading(false);
+      });
   };
 
   const clearError = (field: string) => {
@@ -86,10 +121,12 @@ export default function SignUp() {
   };
 
   return (
-    <div
-      className="flex flex-col lg:flex-row min-h-screen w-full bg-[#080810] text-[#EEEDF8] overflow-hidden"
-      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-    >
+    <>
+      <Toaster position="top-center" />
+      <div
+        className="flex flex-col lg:flex-row min-h-screen w-full bg-[#080810] text-[#EEEDF8] overflow-hidden"
+        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      >
       {/* Left panel (Image + Quote) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-[#0D0D1A] overflow-hidden">
   {/* --- Logo Positioned at Top Left --- */}
@@ -327,5 +364,6 @@ export default function SignUp() {
         </div>
       </div>
     </div>
+    </>
   );
 }
